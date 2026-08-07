@@ -1,0 +1,6 @@
+﻿# Nothing from the game project belongs here.
+*.umap
+*.uasset
+/Design/
+/Content/
+/Source/

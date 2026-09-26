@@ -1,14 +1,3 @@
-// Awake in Hell — building a search plan (excerpt)
-//
-// When the pursuer loses sight of the player it does not wander. It walks the
-// last known position first, then the nearest rooms, then rolls a die on each
-// nearby hiding place.
-//
-// The important detail is that "nearest" means NavMesh distance, not straight
-// line. A room on the other side of a wall is two metres away and thirty
-// seconds of walking; treating those as the same number makes an AI that
-// searches in a way players read as stupid.
-
 void AAIHPursuerController::BuildSearchPlan()
 {
     SearchQueue.Reset();
@@ -21,7 +10,7 @@ void AAIHPursuerController::BuildSearchPlan()
         return;
     }
 
-    SearchQueue.Add(LastKnownPosition);   // always look where they actually were
+    SearchQueue.Add(LastKnownPosition);
     SearchSpots.Add(nullptr);
 
     struct FCandidate { FVector Location; float Distance; };
@@ -54,10 +43,6 @@ void AAIHPursuerController::BuildSearchPlan()
         SearchRadius = FMath::Max(SearchRadius, Candidates[i].Distance);
     }
 
-    // Hiding places near the last known position, each on a weighted coin flip.
-    // Deliberately below 1: the player must not be able to know whether the
-    // door will be opened. That uncertainty is the mechanic — a guaranteed
-    // check makes hiding useless, a guaranteed miss makes it a free escape.
     for (TActorIterator<AAIHHidingSpot> It(GetWorld()); It; ++It)
     {
         float Distance = 0.f;
@@ -65,7 +50,7 @@ void AAIHPursuerController::BuildSearchPlan()
         {
             continue;
         }
-        if (FMath::FRand() > HideCheckChance)   // 0.4
+        if (FMath::FRand() > HideCheckChance)
         {
             continue;
         }
@@ -75,7 +60,6 @@ void AAIHPursuerController::BuildSearchPlan()
     }
 }
 
-// Straight-line distance would say the room behind you is close. It is not.
 bool AAIHPursuerController::NavDistance(const FVector& From, const FVector& To, float& OutDistance) const
 {
     const UNavigationSystemV1* Nav = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
